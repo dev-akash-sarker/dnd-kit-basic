@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import {
   DndContext,
   DragOverlay,
-  KeyboardSensor,
   MouseSensor,
-  PointerSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -15,28 +14,28 @@ import "./style.css";
 import {
   SortableContext,
   arrayMove,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  arraySwap,
+  rectSortingStrategy,
 } from "@dnd-kit/sortable";
+
 import SortableItem from "../../SortableItem";
-import { Item } from "./ItemDrag";
+import { Item } from "./Items";
+import { myPhotos } from "../../photos";
 export default function SortablePreset() {
-  const [items, setItems] = useState([1, 2, 3, 4, 5, 6]);
+  const [items, setItems] = useState(myPhotos);
   const [activeId, setActiveId] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 10,
+        distance: 8,
       },
     }),
-    useSensor(PointerSensor, {
+    useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 40,
-        tolerance: 2,
+        delay: 100,
+        tolerance: 5,
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
@@ -53,29 +52,73 @@ export default function SortablePreset() {
 
       setActiveId(null);
     }
+    setIsDragging(false);
   };
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
+    setIsDragging(true);
+  };
+
+  const handleDragCancle = () => {
+    setActiveId(null);
+    setIsDragging(false);
+  };
+
+  const style = {
+    width: "100%",
+    height: "100%",
+    background: "#e0d2d2",
+    color: "#fff",
+    borderRadius: "8px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+    fontSize: "26px",
+    fontFamily: "Arial, san-serif",
   };
   return (
     <>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancle}
       >
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={items}
+          strategy={rectSortingStrategy}
+          reorderItems={arraySwap}
+        >
           <div className="grid">
-            {items.map((id) => (
-              <SortableItem className="item" key={id} id={id}>
-                <div className="item">{id}</div>
-              </SortableItem>
+            {items.map((id, index) => (
+              <SortableItem
+                className={id.includes(".webp") ? "item imageSize" : "item"}
+                key={id}
+                id={id}
+                link={id}
+                index={index}
+              ></SortableItem>
             ))}
+            <div style={style}>upload</div>
           </div>
         </SortableContext>
-        <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
+        {isDragging && (
+          <DragOverlay adjustScale={true}>
+            {activeId ? (
+              <>
+                <Item
+                  link={activeId}
+                  id={activeId}
+                  index={items.indexOf(activeId)}
+                />
+                {console.log("hhh", activeId)}
+              </>
+            ) : null}
+          </DragOverlay>
+        )}
       </DndContext>
     </>
   );

@@ -4,29 +4,60 @@
 
 .grid {
   display: grid;
-  max-width: 800px;
+  max-width: 1000px;
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 35px;
   padding: 20px;
   align-items: stretch;
   box-sizing: border-box;
+  transition: all linear 0.3s;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 .items,
 .dragover {
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: lightcoral;
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 2rem;
   font-weight: 600;
-  width: 140px;
   height: 140px;
+  width: 140px;
   cursor: pointer;
+  transition: transform 100ms ease 0s !important;
+}
+
+.item {
+  border: 2px solid #ddd;
+  border-radius: 8px !important;
+}
+
+* {
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover;
+}
+
+.dragover:first-child {
+  height: 100%;
+  width: 100%;
+}
+
+.item {
+  user-select: none;
+}
+
+.items:first-child:hover .dragover {
+  height: 100%;
+  width: 100%;
+}
+
+.number {
+  opacity: 0;
 }
 
 .items:first-child {
@@ -36,8 +67,13 @@
   grid-row-end: 3;
   height: 100%;
   width: 100%;
+  z-index: 90000;
 }
 
 .dragover {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.imageSize {
+  background-origin: content-box !important;
 }

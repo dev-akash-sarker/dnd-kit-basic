@@ -13,7 +13,10 @@ function App() {
     <>
       {/* <Simple /> */}
       {/* <SimpleVersionTwo /> */}
-      <SortablePreset />
+      <div style={{ margin: "0 auto" }}>
+        <SortablePreset />
+      </div>
+
       {/* <MySortableList /> */}
     </>
   );
